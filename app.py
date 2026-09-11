@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 from flask import Flask, render_template, request, jsonify, send_from_directory
 
-app = Flask(__name__, static_folder='visuals', template_folder='templates')
+app = Flask(__name__, static_folder='visuals', static_url_path='/visuals', template_folder='templates')
 
 # Load Datasets & Artifacts
 DATA_DIR = 'data'
