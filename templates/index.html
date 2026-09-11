@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="no-referrer">
+    <title>WORLD WAR CHAIN REACTION MODEL | Military Command & AI Oracle</title>
+    <!-- Google Fonts for Vintage Military Aesthetic -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800;900&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Special+Elite&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-dark: #0f0d0b;
+            --bg-card: #181411;
+            --bg-card-border: #3d3126;
+            --text-gold: #e6c88b;
+            --text-muted: #a39282;
+            --text-light: #e8ded2;
+            --accent-red: #c0392b;
+            --accent-amber: #d35400;
+            --accent-green: #27ae60;
+            --military-green: #2d3826;
+            --font-title: 'Cinzel', Georgia, serif;
+            --font-code: 'Courier Prime', monospace;
+            --font-stamp: 'Special Elite', cursive;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            font-family: var(--font-code);
+            line-height: 1.6;
+            background-image: radial-gradient(#261e17 1px, transparent 0);
+            background-size: 24px 24px;
+            padding-bottom: 60px;
+        }
+
+        /* Vintage Vignette Overlay */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            box-shadow: inset 0 0 100px rgba(0,0,0,0.85);
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        header {
+            background: linear-gradient(180deg, #1f1914 0%, #120e0b 100%);
+            border-bottom: 3px double var(--bg-card-border);
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header-title {
+            font-family: var(--font-title);
+            font-size: 2.2rem;
+            color: var(--text-gold);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+
+        .header-subtitle {
+            font-family: var(--font-stamp);
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            margin-top: 5px;
+        }
+
+        .status-bar {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+            font-size: 0.85rem;
+            color: var(--text-gold);
+            background: #14100d;
+            padding: 8px 15px;
+            border: 1px solid var(--bg-card-border);
+            border-radius: 4px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent-green);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--accent-green);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.4; }
+            50% { opacity: 1; }
+            100% { opacity: 0.4; }
+        }
+
+        /* Container Layout */
+        .container {
+            max-width: 1400px;
+            margin: 25px auto;
+            padding: 0 15px;
+        }
+
+        /* Nav Tabs */
+        .nav-tabs {
+            display: flex;
+            gap: 8px;
+            border-bottom: 2px solid var(--bg-card-border);
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: #1c1713;
+            color: var(--text-muted);
+            border: 1px solid var(--bg-card-border);
+            border-bottom: none;
+            padding: 12px 20px;
+            font-family: var(--font-title);
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            border-radius: 4px 4px 0 0;
+        }
+
+        .tab-btn:hover, .tab-btn.active {
+            background: var(--bg-card);
+            color: var(--text-gold);
+            border-color: var(--text-gold);
+            box-shadow: 0 -2px 10px rgba(230, 200, 139, 0.15);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Main Grid Layout */
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 25px;
+        }
+
+        @media (max-width: 1024px) {
+            .grid-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Card Panels */
+        .panel-card {
+            background: var(--bg-card);
+            border: 1px solid var(--bg-card-border);
+            border-radius: 6px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .panel-card::before {
+            content: "";
+            position: absolute;
+            top: 3px; left: 3px; right: 3px; bottom: 3px;
+            border: 1px dashed #2b221b;
+            pointer-events: none;
+        }
+
+        .panel-header {
+            font-family: var(--font-title);
+            color: var(--text-gold);
+            font-size: 1.3rem;
+            border-bottom: 1px solid var(--bg-card-border);
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* Map Frames */
+        .map-frame-container {
+            width: 100%;
+            height: 580px;
+            background: #000;
+            border: 2px solid var(--bg-card-border);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Leader Cards Grid */
+        .leaders-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .leader-card {
+            background: #14100d;
+            border: 1px solid var(--bg-card-border);
+            border-radius: 6px;
+            overflow: hidden;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .leader-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--text-gold);
+            box-shadow: 0 6px 15px rgba(230, 200, 139, 0.15);
+        }
+
+        .leader-img-box {
+            position: relative;
+            height: 220px;
+            overflow: hidden;
+            background: #0a0807;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .leader-img-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: sepia(0.2) contrast(1.1);
+            transition: filter 0.3s ease;
+        }
+
+        .leader-card:hover .leader-img-box img {
+            filter: sepia(0) contrast(1.15);
+        }
+
+        .leader-flag {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 45px;
+            height: 30px;
+            border: 1px solid #ffffffaa;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.8);
+            object-fit: cover;
+        }
+
+        .leader-body {
+            padding: 15px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .leader-name {
+            font-family: var(--font-title);
+            font-size: 1.15rem;
+            color: var(--text-gold);
+        }
+
+        .leader-title {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .leader-regime {
+            display: inline-block;
+            background: #2b1f18;
+            color: var(--accent-amber);
+            padding: 3px 8px;
+            font-size: 0.75rem;
+            border-radius: 3px;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .leader-quote {
+            font-style: italic;
+            font-size: 0.82rem;
+            color: var(--text-light);
+            border-left: 2px solid var(--text-gold);
+            padding-left: 8px;
+            margin-top: auto;
+        }
+
+        /* AI Chat Box */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 580px;
+            background: #110e0c;
+            border: 1px solid var(--bg-card-border);
+            border-radius: 4px;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .chat-msg {
+            max-width: 90%;
+            padding: 12px 15px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .chat-msg.user {
+            align-self: flex-end;
+            background: var(--military-green);
+            color: #f1f8f0;
+            border: 1px solid #485c3f;
+        }
+
+        .chat-msg.bot {
+            align-self: flex-start;
+            background: #1f1914;
+            color: var(--text-light);
+            border: 1px solid var(--bg-card-border);
+            border-left: 3px solid var(--text-gold);
+        }
+
+        .chat-msg-title {
+            font-weight: bold;
+            color: var(--text-gold);
+            font-size: 0.8rem;
+            margin-bottom: 4px;
+        }
+
+        .chat-quick-btns {
+            padding: 10px 15px;
+            background: #181310;
+            border-top: 1px solid var(--bg-card-border);
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+        }
+
+        .quick-btn {
+            background: #261f1a;
+            color: var(--text-muted);
+            border: 1px solid var(--bg-card-border);
+            padding: 5px 10px;
+            font-size: 0.78rem;
+            cursor: pointer;
+            white-space: nowrap;
+            border-radius: 3px;
+        }
+
+        .quick-btn:hover {
+            background: var(--text-gold);
+            color: #000;
+        }
+
+        .chat-input-row {
+            display: flex;
+            border-top: 1px solid var(--bg-card-border);
+        }
+
+        .chat-input-row input {
+            flex: 1;
+            background: #0d0b09;
+            border: none;
+            color: var(--text-light);
+            padding: 12px 15px;
+            font-family: var(--font-code);
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        .chat-input-row button {
+            background: var(--accent-amber);
+            color: #fff;
+            border: none;
+            padding: 0 20px;
+            font-family: var(--font-title);
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .chat-input-row button:hover {
+            background: var(--accent-red);
+        }
+
+        /* Risk Simulator Form */
+        .simulator-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .sim-control {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .sim-control label {
+            font-size: 0.85rem;
+            color: var(--text-gold);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .sim-control input[type="range"] {
+            accent-color: var(--accent-amber);
+            cursor: pointer;
+        }
+
+        .sim-result-box {
+            margin-top: 15px;
+            padding: 15px;
+            background: #120e0c;
+            border: 1px solid var(--bg-card-border);
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .risk-prob-text {
+            font-family: var(--font-title);
+            font-size: 2rem;
+            color: var(--accent-red);
+            font-weight: 900;
+        }
+
+        .badge-risk {
+            display: inline-block;
+            padding: 4px 12px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            border-radius: 3px;
+            text-transform: uppercase;
+        }
+
+        .badge-high { background: var(--accent-red); color: #fff; }
+        .badge-elevated { background: var(--accent-amber); color: #fff; }
+        .badge-low { background: var(--accent-green); color: #fff; }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border: 2px solid var(--text-gold);
+            max-width: 700px;
+            width: 100%;
+            border-radius: 8px;
+            padding: 25px;
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px; right: 20px;
+            color: var(--text-gold);
+            font-size: 1.8rem;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--bg-card-border);
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-title">⚔️ WORLD WAR CHAIN REACTION MODEL ⚔️</div>
+        <div class="header-subtitle">CAUSAL GRAPH MECHANICS • HISTORICAL DOSSIERS • AI ORACLE ASSISTANT</div>
+        <div class="status-bar">
+            <div class="status-item"><div class="status-dot"></div> AI ORACLE: ONLINE</div>
+            <div class="status-item">POLITY 5 DATASET: LOADED</div>
+            <div class="status-item">MADDISON GDP ARCHIVE: ACTIVE</div>
+            <div class="status-item">UCDP CONFLICT MATRIX: 1800–2022</div>
+            <div class="status-item">EARLY WARNING ACCURACY: 95.8%</div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="openTab('tab-maps')">🗺️ WAR THEATER MAPS</button>
+            <button class="tab-btn" onclick="openTab('tab-oracle')">🤖 AI FIELD ORACLE</button>
+            <button class="tab-btn" onclick="openTab('tab-leaders')">🎖️ HISTORICAL LEADERS & DOSSIERS</button>
+            <button class="tab-btn" onclick="openTab('tab-theory')">⚙️ CHAIN REACTION THEORY</button>
+        </div>
+
+        <!-- TAB 1: WAR THEATER MAPS -->
+        <div id="tab-maps" class="tab-content active">
+            <div class="grid-layout">
+                <div>
+                    <div class="panel-card">
+                        <div class="panel-header">
+                            <span>🪖 THEATER OF WAR: HISTORICAL WAR INTERACTIONS</span>
+                            <div style="font-size: 0.8rem; color: var(--text-muted);">SELECT MAP MODE BELOW</div>
+                        </div>
+                        <div style="display: flex; gap: 10px; margin-bottom: 12px;">
+                            <button class="quick-btn" onclick="setMap('/visuals/war_interactions.html')">🔥 War Interactions Vector Map</button>
+                            <button class="quick-btn" onclick="setMap('/visuals/risk_map.html')">🌐 Global Instability Risk Map</button>
+                            <button class="quick-btn" onclick="setMap('/visuals/timeline.html')">📈 Regime Polity vs Deaths Timeline</button>
+                        </div>
+                        <div class="map-frame-container">
+                            <iframe id="main-map-frame" src="/visuals/war_interactions.html"></iframe>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Side Panel: AI Risk Simulator -->
+                <div>
+                    <div class="panel-card">
+                        <div class="panel-header">🎯 AI RISK OUTBREAK SIMULATOR</div>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">
+                            Simulate economic drops and regime shifts to calculate war outbreak probability using our Random Forest AI model.
+                        </p>
+
+                        <form class="simulator-form" onsubmit="runSimulation(event)">
+                            <div class="sim-control">
+                                <label>
+                                    <span>Polity Score (Regime Type):</span>
+                                    <span id="val-polity" style="color:var(--text-gold); font-weight:bold;">-6</span>
+                                </label>
+                                <input type="range" id="sim-polity" min="-10" max="10" value="-6" oninput="document.getElementById('val-polity').innerText=this.value">
+                                <span style="font-size:0.75rem; color:#888;">-10 Autocracy / Dictatorship ➔ +10 Democracy</span>
+                            </div>
+
+                            <div class="sim-control">
+                                <label>
+                                    <span>GDP Growth Shock (%):</span>
+                                    <span id="val-gdp" style="color:var(--text-gold); font-weight:bold;">-8.0%</span>
+                                </label>
+                                <input type="range" id="sim-gdp" min="-25" max="10" step="0.5" value="-8" oninput="document.getElementById('val-gdp').innerText=this.value+'%'">
+                                <span style="font-size:0.75rem; color:#888;">-5% or worse triggers Economic Collapse indicator</span>
+                            </div>
+
+                            <div class="sim-control">
+                                <label>
+                                    <span>Prior Year Conflict Fatalities:</span>
+                                    <span id="val-deaths" style="color:var(--text-gold); font-weight:bold;">150</span>
+                                </label>
+                                <input type="range" id="sim-deaths" min="0" max="2000" step="25" value="150" oninput="document.getElementById('val-deaths').innerText=this.value">
+                            </div>
+
+                            <button type="submit" class="quick-btn" style="background:var(--accent-amber); color:#fff; font-weight:bold; padding:10px; margin-top:10px;">
+                                ⚡ RUN SIMULATION PREDICTION
+                            </button>
+                        </form>
+
+                        <div class="sim-result-box" id="sim-result">
+                            <div style="font-size:0.8rem; color:var(--text-muted);">WAR OUTBREAK PROBABILITY</div>
+                            <div class="risk-prob-text" id="res-prob">-- %</div>
+                            <div style="margin-top:8px;" id="res-badge"><span class="badge-risk badge-low">READY TO SIMULATE</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: AI FIELD ORACLE CHAT -->
+        <div id="tab-oracle" class="tab-content">
+            <div class="panel-card">
+                <div class="panel-header">
+                    <span>🤖 FIELD MARSHAL ORACLE AI ASSISTANT</span>
+                    <span style="font-size: 0.8rem; color: var(--text-green);">INTELLIGENCE SYSTEM ONLINE</span>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">
+                    Ask the Field Marshal Oracle about any historical leader, war campaign, causal mechanism, country risk prediction, or philosophical lesson.
+                </p>
+
+                <div class="chat-container">
+                    <div class="chat-messages" id="chat-messages">
+                        <div class="chat-msg bot">
+                            <div class="chat-msg-title">🎖️ FIELD MARSHAL ORACLE AI</div>
+                            Greetings, Commandant. I am loaded with Polity 5 political data, Maddison GDP records, UCDP war fatalities, and Random Forest predictive models.<br><br>
+                            How may I assist your strategic inquiry today?
+                        </div>
+                    </div>
+
+                    <div class="chat-quick-btns">
+                        <button class="quick-btn" onclick="sendQuickQuery('Tell me about Adolf Hitler')">👤 Adolf Hitler</button>
+                        <button class="quick-btn" onclick="sendQuickQuery('Tell me about Joseph Stalin')">👤 Joseph Stalin</button>
+                        <button class="quick-btn" onclick="sendQuickQuery('Tell me about Muammar Gaddafi')">👤 Gaddafi</button>
+                        <button class="quick-btn" onclick="sendQuickQuery('What happened in the Eastern Front war?')">⚔️ WWII Eastern Front</button>
+                        <button class="quick-btn" onclick="sendQuickQuery('What is the early warning risk prediction for Sudan?')">🇸🇩 Sudan Risk</button>
+                        <button class="quick-btn" onclick="sendQuickQuery('How does economic collapse cause war?')">⚙️ Causal Chain Mechanism</button>
+                    </div>
+
+                    <div class="chat-input-row">
+                        <input type="text" id="chat-input" placeholder="Type your strategic question here..." onkeypress="handleKeyPress(event)">
+                        <button onclick="submitChat()">TRANSMIT ➔</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: HISTORICAL LEADERS & DOSSIERS -->
+        <div id="tab-leaders" class="tab-content">
+            <div class="panel-card">
+                <div class="panel-header">
+                    <span>🎖️ KEY CONFLICT LEADERS & DICTATORSHIPS</span>
+                    <span style="font-size:0.8rem; color:var(--text-muted);">CLICK ANY CARD FOR FULL DOSSIER</span>
+                </div>
+                <div class="leaders-grid" id="leaders-grid">
+                    <!-- Populated via JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: CHAIN REACTION THEORY -->
+        <div id="tab-theory" class="tab-content">
+            <div class="panel-card">
+                <div class="panel-header">⚙️ CAUSAL TRANSITION GRAPH & PHILOSOPHICAL REFLECTION</div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                    <div>
+                        <h3 style="color:var(--text-gold); margin-bottom:10px;">Causal Network Graph</h3>
+                        <img src="/visuals/causal_map.png" alt="Causal Map" style="width:100%; border:1px solid var(--bg-card-border); border-radius:4px;">
+                    </div>
+                    <div>
+                        <h3 style="color:var(--text-gold); margin-bottom:10px;">How Small Sparks Lead to Systemic Collapse</h3>
+                        <div style="background:#120e0c; padding:15px; border:1px solid var(--bg-card-border); border-radius:4px; font-size:0.88rem; max-height:480px; overflow-y:auto;">
+                            <p><strong>1. The Anatomy of the Spark:</strong> An Economic Collapse (>5% GDP drop) is often the first trigger. On its own, a recession is a technical event. However, when it interacts with fragile governance, it becomes a catalyst for the rise of Dictatorship.</p><br>
+                            <p><strong>2. The Ripple Effect:</strong> Once a dictatorship is established, the causal chain accelerates toward War. Autocracies lacking internal checks turn to external or internal conflict to distract from continuing economic failures.</p><br>
+                            <p><strong>3. Empirical Findings in Africa & Europe:</strong> In Sudan, Libya, Rwanda, Germany, and Italy, the transition from economic shock to polity drop to major war occurs consistently within 3-5 years.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leader Detail Modal -->
+    <div class="modal" id="leader-modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal()">&times;</span>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <footer>
+        WORLD WAR CHAIN REACTION MODEL • RESEARCH & PREDICTIVE SYSTEM • 2025
+    </footer>
+
+    <script>
+        // Tab switching logic
+        function openTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        // Map changing
+        function setMap(url) {
+            document.getElementById('main-map-frame').src = url;
+        }
+
+        // Generate SVG military badge fallback if photo link fails
+        function getAvatarSVG(name, country) {
+            const initials = name.split(' ').map(n=>n[0]).join('');
+            const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 200 220" style="background:#1a1410;">
+                <rect width="100%" height="100%" fill="#1f1813"/>
+                <polygon points="100,20 180,60 180,160 100,200 20,160 20,60" fill="#2d221a" stroke="#e6c88b" stroke-width="3"/>
+                <circle cx="100" cy="95" r="45" fill="#3d2e23" stroke="#e6c88b" stroke-width="2"/>
+                <text x="100" y="107" font-family="serif" font-size="28" font-weight="bold" fill="#e6c88b" text-anchor="middle">${initials}</text>
+                <text x="100" y="165" font-family="monospace" font-size="11" fill="#a39282" text-anchor="middle">${country.toUpperCase()}</text>
+            </svg>`;
+            return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+        }
+
+        // Load Leaders on page load
+        async function loadLeaders() {
+            try {
+                const res = await fetch('/api/leaders');
+                const leaders = await res.json();
+                const grid = document.getElementById('leaders-grid');
+                grid.innerHTML = leaders.map(l => {
+                    const fallbackImg = getAvatarSVG(l.name, l.country);
+                    return `
+                    <div class="leader-card" onclick="showLeaderModal('${l.id}')">
+                        <div class="leader-img-box">
+                            <img src="${l.image_url}" referrerpolicy="no-referrer" alt="${l.name}" onerror="this.src='${fallbackImg}'">
+                            <img src="${l.flag_url}" referrerpolicy="no-referrer" class="leader-flag" alt="Flag">
+                        </div>
+                        <div class="leader-body">
+                            <div class="leader-name">${l.name}</div>
+                            <div class="leader-title">${l.title} (${l.country})</div>
+                            <div class="leader-regime">${l.regime}</div>
+                            <div class="leader-quote">"${l.quote}"</div>
+                        </div>
+                    </div>
+                `}).join('');
+                window.leadersData = leaders;
+            } catch (err) {
+                console.error("Error loading leaders:", err);
+            }
+        }
+
+        function showLeaderModal(id) {
+            const leader = window.leadersData.find(l => l.id === id);
+            if (!leader) return;
+
+            const fallbackImg = getAvatarSVG(leader.name, leader.country);
+            const modalBody = document.getElementById('modal-body');
+            modalBody.innerHTML = `
+                <div style="display:flex; gap:20px; flex-wrap:wrap; margin-bottom:15px;">
+                    <img src="${leader.image_url}" referrerpolicy="no-referrer" onerror="this.src='${fallbackImg}'" style="width:180px; height:220px; object-fit:cover; border:2px solid var(--text-gold); border-radius:4px;">
+                    <div style="flex:1; min-width:250px;">
+                        <h2 style="font-family:var(--font-title); color:var(--text-gold);">${leader.name}</h2>
+                        <div style="color:var(--text-muted); margin-bottom:8px;">${leader.title} | ${leader.country} (${leader.years})</div>
+                        <div style="display:inline-block; background:var(--accent-amber); color:#fff; padding:3px 8px; border-radius:3px; font-weight:bold; font-size:0.8rem; margin-bottom:10px;">${leader.regime}</div>
+                        <p style="font-style:italic; border-left:3px solid var(--text-gold); padding-left:10px; margin-bottom:12px; color:#e8ded2;">"${leader.quote}"</p>
+                        <div style="font-size:0.85rem; color:var(--text-muted);"><strong>Key Conflicts:</strong> ${leader.conflicts.join(', ')}</div>
+                    </div>
+                </div>
+                <h4 style="color:var(--text-gold); margin-bottom:6px;">Historical Dossier & Strategy</h4>
+                <p style="font-size:0.9rem; line-height:1.6; color:var(--text-light); margin-bottom:15px;">${leader.bio}</p>
+                <div style="height:180px; border:1px solid var(--bg-card-border); overflow:hidden; border-radius:4px; background:#120e0c;">
+                    <img src="${leader.country_image}" referrerpolicy="no-referrer" onerror="this.style.display='none'" style="width:100%; height:100%; object-fit:cover;" alt="Country Scene">
+                </div>
+            `;
+            document.getElementById('leader-modal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('leader-modal').style.display = 'none';
+        }
+
+        // Chat logic
+        async function submitChat() {
+            const input = document.getElementById('chat-input');
+            const msg = input.value.trim();
+            if (!msg) return;
+
+            appendMessage('user', msg);
+            input.value = '';
+
+            try {
+                const res = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({message: msg})
+                });
+                const data = await res.json();
+                appendMessage('bot', data.reply);
+            } catch (err) {
+                appendMessage('bot', '⚠️ Error communicating with Field Marshal AI Server.');
+            }
+        }
+
+        function appendMessage(sender, text) {
+            const container = document.getElementById('chat-messages');
+            const div = document.createElement('div');
+            div.className = `chat-msg ${sender}`;
+            const title = sender === 'user' ? 'COMMANDANT' : '🎖️ FIELD MARSHAL ORACLE AI';
+            div.innerHTML = `<div class="chat-msg-title">${title}</div>${text.replace(/\n/g, '<br>')}`;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function sendQuickQuery(query) {
+            document.getElementById('chat-input').value = query;
+            openTab('tab-oracle');
+            submitChat();
+        }
+
+        function handleKeyPress(e) {
+            if (e.key === 'Enter') submitChat();
+        }
+
+        // Simulation logic
+        async function runSimulation(e) {
+            e.preventDefault();
+            const polity = parseFloat(document.getElementById('sim-polity').value);
+            const gdp_growth = parseFloat(document.getElementById('sim-gdp').value) / 100.0;
+            const deaths = parseFloat(document.getElementById('sim-deaths').value);
+
+            try {
+                const res = await fetch('/api/predict', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({polity, gdp_growth, deaths})
+                });
+                const data = await res.json();
+
+                document.getElementById('res-prob').innerText = `${data.probability}%`;
+                const badge = document.getElementById('res-badge');
+                let badgeClass = 'badge-low';
+                if (data.probability > 60) badgeClass = 'badge-high';
+                else if (data.probability > 30) badgeClass = 'badge-elevated';
+
+                badge.innerHTML = `<span class="badge-risk ${badgeClass}">${data.risk_level} RISK</span>`;
+            } catch (err) {
+                console.error("Simulation error:", err);
+            }
+        }
+
+        window.onload = () => {
+            loadLeaders();
+        };
+    </script>
+</body>
+</html>
