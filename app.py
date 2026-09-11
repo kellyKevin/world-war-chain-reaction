@@ -5,11 +5,14 @@ import pandas as pd
 import numpy as np
 from flask import Flask, render_template, request, jsonify, send_from_directory
 
-app = Flask(__name__, static_folder='visuals', static_url_path='/visuals', template_folder='templates')
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_DIR = os.path.join(BASE_DIR, 'data')
+VISUALS_DIR = os.path.join(BASE_DIR, 'visuals')
+TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
+
+app = Flask(__name__, static_folder=VISUALS_DIR, static_url_path='/visuals', template_folder=TEMPLATES_DIR)
 
 # Load Datasets & Artifacts
-DATA_DIR = 'data'
-
 def load_data():
     data = {}
     if os.path.exists(os.path.join(DATA_DIR, 'cleaned_data.csv')):
@@ -35,8 +38,9 @@ def load_data():
     else:
         data['causal_graph'] = {}
 
-    if os.path.exists('reflection.md'):
-        with open('reflection.md') as f:
+    reflection_file = os.path.join(BASE_DIR, 'reflection.md')
+    if os.path.exists(reflection_file):
+        with open(reflection_file) as f:
             data['reflection'] = f.read()
     else:
         data['reflection'] = ""
@@ -247,6 +251,10 @@ ai_engine = WarModelAI(DATA)
 def index():
     return render_template('index.html')
 
+@app.route('/visuals/<path:filename>')
+def serve_visuals(filename):
+    return send_from_directory(VISUALS_DIR, filename)
+
 @app.route('/api/chat', methods=['POST'])
 def api_chat():
     req_data = request.get_json() or {}
@@ -283,7 +291,6 @@ def api_predict():
             "inputs": {"polity": polity, "gdp_growth": gdp_growth, "deaths": deaths}
         })
     else:
-        # Fallback calculation if model file not available
         heuristic = max(0, min(100, (10 - polity) * 4 + (abs(gdp_growth) * 100) + (10 if deaths > 25 else 0)))
         return jsonify({
             "probability": round(heuristic, 2),

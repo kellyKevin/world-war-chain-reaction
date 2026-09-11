@@ -3,21 +3,21 @@
   "builds": [
     {
       "src": "api/index.py",
-      "use": "@vercel/python"
-    },
-    {
-      "src": "visuals/**",
-      "use": "@vercel/static"
+      "use": "@vercel/python",
+      "config": {
+        "includeFiles": [
+          "templates/**",
+          "visuals/**",
+          "data/**",
+          "reflection.md"
+        ]
+      }
     }
   ],
   "routes": [
     {
-      "src": "/visuals/(.*)",
-      "dest": "/visuals/$1"
-    },
-    {
       "src": "/(.*)",
-      "dest": "/api/index.py"
+      "dest": "api/index.py"
     }
   ]
 }
